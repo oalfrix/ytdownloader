@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube to MP3 Converter</title>
+</head>
+<body>
+    <h1>YouTube to MP3 Converter</h1>
+    <form id="convert-form">
+        <input type="url" id="url" name="url" placeholder="Enter YouTube URL" required>
+        <button type="submit">Convert</button>
+    </form>
+    <div id="message"></div>
+
+    <script>
+        document.getElementById('convert-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = '';
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ url })
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    messageDiv.innerHTML = `<a href="${data.downloadUrl}">Download MP3</a>`;
+                } else {
+                    messageDiv.textContent = data.error;
+                }
+            } catch (error) {
+                messageDiv.textContent = 'An error occurred while converting the video.';
+            }
+        });
+    </script>
+</body>
+</html>
